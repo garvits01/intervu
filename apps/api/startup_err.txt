@@ -1,0 +1,58 @@
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +17ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +10ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mThrottlerModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDiscoveryModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mHealthModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mEventEmitterModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRedisModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mGraphQLSchemaBuilderModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mProjectsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPlacementsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAnalyticsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mGraphQLModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTasksModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthController {/api/v1/auth}:[39m[38;5;3m +28ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/auth/login, POST} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/auth/register, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/auth/refresh, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/v1/users}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/users, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/users/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/users/:id, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mProjectsController {/api/v1/projects}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/projects, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/projects, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/projects/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/projects/:id, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/projects/:id, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mTasksController {/api/v1/tasks}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/tasks, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/tasks, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/tasks/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/tasks/:id, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/tasks/:id, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/tasks/project/:projectId/stats, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPlacementsController {/api/v1/placements}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/placements/drives, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/placements/drives, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/placements/drives/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/placements/drives/:id/status, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/placements/drives/:driveId/register, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/placements/match, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/placements/drives/:id/stats, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAnalyticsController {/api/v1/analytics}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/analytics/dashboard, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/analytics/placements/report, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mHealthController {/api/v1/health}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/health, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[RedisService] [39m[32mΓ£à Redis connected[39m
+[32m[Nest] 18128  - [39m17/02/2026, 2:40:35 pm [32m    LOG[39m [38;5;3m[PrismaService] [39m[32mΓ£à Database connected[39m
+[Nest] 18128  - 17/02/2026, 2:40:35 pm   ERROR [PackageLoader] The "@as-integrations/express5" package is missing. Please, make sure to install it to take advantage of GraphQLModule.

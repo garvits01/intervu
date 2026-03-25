@@ -1,0 +1,553 @@
+// Haveloc Pro — Prisma Schema
+// Full data model for enterprise project management & placement automation
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// CORE IDENTITY
+// ─────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  password      String   @default("") // Hashed password
+  avatarUrl     String?
+  auth0Id       String?  @unique @map("auth0_id") // Optional now
+  role          UserRole @default(MEMBER)
+  isActive      Boolean  @default(true)
+  lastLoginAt   DateTime?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  orgMemberships  OrgMembership[]
+  assignedTasks   Task[]           @relation("TaskAssignee")
+  createdTasks    Task[]           @relation("TaskCreator")
+  comments        Comment[]
+  notifications   Notification[]
+  candidateProfile CandidateProfile?
+  auditLogs       AuditLog[]
+  activityLogs    ActivityLog[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  logoUrl     String?
+  domain      String?
+  plan        OrgPlan  @default(FREE)
+  settings    Json     @default("{}")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  members       OrgMembership[]
+  projects      Project[]
+  placements    PlacementDrive[]
+  jobs          Job[]
+  templates     Template[]
+  integrations  Integration[]
+  auditLogs     AuditLog[]
+
+  @@map("organizations")
+}
+
+enum OrgPlan {
+  FREE
+  STARTER
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+model OrgMembership {
+  id        String        @id @default(cuid())
+  userId    String        @map("user_id")
+  orgId     String        @map("org_id")
+  role      OrgRole       @default(MEMBER)
+  joinedAt  DateTime      @default(now()) @map("joined_at")
+
+  user User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  org  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, orgId])
+  @@map("org_memberships")
+}
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  MANAGER
+  MEMBER
+  VIEWER
+}
+
+// ─────────────────────────────────────────────
+// PROJECT MANAGEMENT
+// ─────────────────────────────────────────────
+
+model Project {
+  id          String        @id @default(cuid())
+  orgId       String        @map("org_id")
+  name        String
+  description String?
+  status      ProjectStatus @default(ACTIVE)
+  startDate   DateTime?     @map("start_date")
+  endDate     DateTime?     @map("end_date")
+  settings    Json          @default("{}")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  org        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  tasks      Task[]
+  threads    Thread[]
+  milestones Milestone[]
+
+  @@index([orgId])
+  @@map("projects")
+}
+
+enum ProjectStatus {
+  DRAFT
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+  ARCHIVED
+}
+
+model Task {
+  id            String       @id @default(cuid())
+  projectId     String       @map("project_id")
+  assigneeId    String?      @map("assignee_id")
+  creatorId     String       @map("creator_id")
+  title         String
+  description   String?
+  status        TaskStatus   @default(TODO)
+  priority      TaskPriority @default(MEDIUM)
+  dueDate       DateTime?    @map("due_date")
+  estimatedHours Float?      @map("estimated_hours")
+  actualHours   Float?       @map("actual_hours")
+  tags          String[]     @default([])
+  position      Int          @default(0)
+  aiGenerated   Boolean      @default(false) @map("ai_generated")
+  aiConfidence  Float?       @map("ai_confidence")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  project      Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee     User?         @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  creator      User          @relation("TaskCreator", fields: [creatorId], references: [id])
+  comments     Comment[]
+  dependencies TaskDependency[] @relation("DependentTask")
+  dependents   TaskDependency[] @relation("BlockingTask")
+  attachments  Attachment[]
+  activityLogs ActivityLog[]
+
+  @@index([projectId])
+  @@index([assigneeId])
+  @@index([status])
+  @@map("tasks")
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  BLOCKED
+  DONE
+  CANCELLED
+}
+
+enum TaskPriority {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+model TaskDependency {
+  id              String         @id @default(cuid())
+  dependentTaskId String         @map("dependent_task_id")
+  blockingTaskId  String         @map("blocking_task_id")
+  type            DependencyType @default(FINISH_TO_START)
+
+  dependentTask Task @relation("DependentTask", fields: [dependentTaskId], references: [id], onDelete: Cascade)
+  blockingTask  Task @relation("BlockingTask", fields: [blockingTaskId], references: [id], onDelete: Cascade)
+
+  @@unique([dependentTaskId, blockingTaskId])
+  @@map("task_dependencies")
+}
+
+enum DependencyType {
+  FINISH_TO_START
+  START_TO_START
+  FINISH_TO_FINISH
+  START_TO_FINISH
+}
+
+model Milestone {
+  id        String          @id @default(cuid())
+  projectId String          @map("project_id")
+  title     String
+  dueDate   DateTime        @map("due_date")
+  status    MilestoneStatus @default(PENDING)
+  createdAt DateTime        @default(now()) @map("created_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("milestones")
+}
+
+enum MilestoneStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  MISSED
+}
+
+// ─────────────────────────────────────────────
+// COLLABORATION
+// ─────────────────────────────────────────────
+
+model Thread {
+  id        String     @id @default(cuid())
+  projectId String     @map("project_id")
+  title     String
+  topic     String?
+  isPinned  Boolean    @default(false) @map("is_pinned")
+  aiSummary String?    @map("ai_summary")
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  project  Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  comments Comment[]
+
+  @@index([projectId])
+  @@map("threads")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  authorId  String   @map("author_id")
+  taskId    String?  @map("task_id")
+  threadId  String?  @map("thread_id")
+  content   String
+  isEdited  Boolean  @default(false) @map("is_edited")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  author User    @relation(fields: [authorId], references: [id])
+  task   Task?   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  thread Thread? @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([threadId])
+  @@map("comments")
+}
+
+model Notification {
+  id        String             @id @default(cuid())
+  userId    String             @map("user_id")
+  type      NotificationType
+  title     String
+  body      String?
+  data      Json               @default("{}")
+  isRead    Boolean            @default(false) @map("is_read")
+  createdAt DateTime           @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  TASK_ASSIGNED
+  TASK_UPDATED
+  TASK_OVERDUE
+  COMMENT_ADDED
+  MENTION
+  PLACEMENT_UPDATE
+  AI_INSIGHT
+  SYSTEM
+}
+
+// ─────────────────────────────────────────────
+// PLACEMENT & RECRUITMENT
+// ─────────────────────────────────────────────
+
+model PlacementDrive {
+  id          String      @id @default(cuid())
+  orgId       String      @map("org_id")
+  title       String
+  description String?
+  status      DriveStatus @default(DRAFT)
+  startDate   DateTime    @map("start_date")
+  endDate     DateTime    @map("end_date")
+  settings    Json        @default("{}")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  org            Organization       @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  jobs           Job[]
+  registrations  DriveRegistration[]
+  matchResults   MatchResult[]
+
+  @@index([orgId])
+  @@map("placement_drives")
+}
+
+enum DriveStatus {
+  DRAFT
+  REGISTRATION_OPEN
+  IN_PROGRESS
+  EVALUATION
+  COMPLETED
+  CANCELLED
+}
+
+model Job {
+  id              String   @id @default(cuid())
+  orgId           String   @map("org_id")
+  driveId         String?  @map("drive_id")
+  title           String
+  company         String
+  description     String
+  requirements    String[]
+  skills          String[]
+  location        String?
+  salary          String?
+  jobType         JobType  @default(FULL_TIME) @map("job_type")
+  openPositions   Int      @default(1) @map("open_positions")
+  isActive        Boolean  @default(true) @map("is_active")
+  embedding       Float[]  @default([]) 
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  org          Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  drive        PlacementDrive? @relation(fields: [driveId], references: [id])
+  matchResults MatchResult[]
+
+  @@index([orgId])
+  @@index([driveId])
+  @@map("jobs")
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  INTERNSHIP
+  CONTRACT
+}
+
+model CandidateProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique @map("user_id")
+  resumeUrl       String?  @map("resume_url")
+  parsedSkills    String[] @default([]) @map("parsed_skills")
+  education       Json     @default("[]")
+  experience      Json     @default("[]")
+  parsedData      Json     @default("{}")  @map("parsed_data")
+  embedding       Float[]  @default([]) 
+  lastParsedAt    DateTime? @map("last_parsed_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  registrations    DriveRegistration[]
+  matchResults     MatchResult[]
+
+  @@map("candidate_profiles")
+}
+
+model DriveRegistration {
+  id          String             @id @default(cuid())
+  driveId     String             @map("drive_id")
+  candidateId String             @map("candidate_id")
+  status      RegistrationStatus @default(REGISTERED)
+  registeredAt DateTime          @default(now()) @map("registered_at")
+
+  drive     PlacementDrive   @relation(fields: [driveId], references: [id], onDelete: Cascade)
+  candidate CandidateProfile @relation(fields: [candidateId], references: [id])
+
+  @@unique([driveId, candidateId])
+  @@map("drive_registrations")
+}
+
+enum RegistrationStatus {
+  REGISTERED
+  SHORTLISTED
+  INTERVIEW_SCHEDULED
+  SELECTED
+  REJECTED
+  WITHDRAWN
+}
+
+model MatchResult {
+  id            String   @id @default(cuid())
+  driveId       String   @map("drive_id")
+  jobId         String   @map("job_id")
+  candidateId   String   @map("candidate_id")
+  score         Float
+  confidence    Float
+  reasoning     String?
+  biasFlags     Json     @default("[]") @map("bias_flags")
+  status        MatchStatus @default(PENDING)
+  reviewedBy    String?  @map("reviewed_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  drive     PlacementDrive   @relation(fields: [driveId], references: [id], onDelete: Cascade)
+  job       Job              @relation(fields: [jobId], references: [id])
+  candidate CandidateProfile @relation(fields: [candidateId], references: [id])
+
+  @@unique([driveId, jobId, candidateId])
+  @@index([driveId])
+  @@index([score])
+  @@map("match_results")
+}
+
+enum MatchStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  OVERRIDDEN
+}
+
+// ─────────────────────────────────────────────
+// TEMPLATES & WORKFLOWS
+// ─────────────────────────────────────────────
+
+model Template {
+  id          String       @id @default(cuid())
+  orgId       String?      @map("org_id")
+  name        String
+  description String?
+  category    TemplateCategory
+  content     Json
+  isPublic    Boolean      @default(false) @map("is_public")
+  usageCount  Int          @default(0) @map("usage_count")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  org Organization? @relation(fields: [orgId], references: [id])
+
+  @@index([category])
+  @@map("templates")
+}
+
+enum TemplateCategory {
+  PROJECT
+  PLACEMENT_DRIVE
+  TASK_BOARD
+  REPORT
+  WORKFLOW
+  COMMUNICATION
+}
+
+// ─────────────────────────────────────────────
+// INTEGRATIONS
+// ─────────────────────────────────────────────
+
+model Integration {
+  id           String            @id @default(cuid())
+  orgId        String            @map("org_id")
+  provider     String
+  status       IntegrationStatus @default(INACTIVE)
+  config       Json              @default("{}")
+  accessToken  String?           @map("access_token")
+  refreshToken String?           @map("refresh_token")
+  expiresAt    DateTime?         @map("expires_at")
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+
+  org Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, provider])
+  @@map("integrations")
+}
+
+enum IntegrationStatus {
+  ACTIVE
+  INACTIVE
+  ERROR
+  EXPIRED
+}
+
+// ─────────────────────────────────────────────
+// FILES & ATTACHMENTS
+// ─────────────────────────────────────────────
+
+model Attachment {
+  id        String   @id @default(cuid())
+  taskId    String?  @map("task_id")
+  fileName  String   @map("file_name")
+  fileUrl   String   @map("file_url")
+  mimeType  String   @map("mime_type")
+  sizeBytes Int      @map("size_bytes")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  task Task? @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("attachments")
+}
+
+// ─────────────────────────────────────────────
+// AUDIT & ANALYTICS
+// ─────────────────────────────────────────────
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  orgId     String   @map("org_id")
+  userId    String   @map("user_id")
+  action    String
+  entity    String
+  entityId  String   @map("entity_id")
+  before    Json?
+  after     Json?
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  org  Organization @relation(fields: [orgId], references: [id])
+  user User         @relation(fields: [userId], references: [id])
+
+  @@index([orgId, createdAt])
+  @@index([entity, entityId])
+  @@map("audit_logs")
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  taskId    String?  @map("task_id")
+  action    String
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User  @relation(fields: [userId], references: [id])
+  task Task? @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("activity_logs")
+}

@@ -1,0 +1,157 @@
+# ═══════════════════════════════════════════════════
+# Haveloc Pro AI — K8s Production Deployment
+# ═══════════════════════════════════════════════════
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: haveloc-ai
+  namespace: haveloc-pro
+  labels:
+    app: haveloc-ai
+    component: ai-service
+    version: v1
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: haveloc-ai
+  template:
+    metadata:
+      labels:
+        app: haveloc-ai
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8001"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: haveloc-ai
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+        - name: haveloc-ai
+          image: ghcr.io/haveloc/ai-service:latest
+          ports:
+            - containerPort: 8001
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: haveloc-ai-secrets
+            - configMapRef:
+                name: haveloc-ai-config
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "2000m"
+              memory: "2Gi"
+              # nvidia.com/gpu: "1"  # Uncomment for GPU workloads
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8001
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            failureThreshold: 30
+            periodSeconds: 2
+      # GPU node affinity (optional)
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #         - matchExpressions:
+      #             - key: node-type
+      #               operator: In
+      #               values: ["gpu"]
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: haveloc-ai
+  namespace: haveloc-pro
+spec:
+  type: ClusterIP
+  selector:
+    app: haveloc-ai
+  ports:
+    - port: 8001
+      targetPort: 8001
+      protocol: TCP
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: haveloc-ai-hpa
+  namespace: haveloc-pro
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: haveloc-ai
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: haveloc-ai-config
+  namespace: haveloc-pro
+data:
+  ENVIRONMENT: "production"
+  LOG_LEVEL: "INFO"
+  PORT: "8001"
+  WORKERS: "4"
+  LLM_PROVIDER: "auto"
+  PROMETHEUS_ENABLED: "true"
+  CORS_ORIGINS: "https://app.haveloc.pro,https://haveloc.pro"
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: haveloc-ai-pdb
+  namespace: haveloc-pro
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: haveloc-ai

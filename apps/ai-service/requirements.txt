@@ -1,0 +1,44 @@
+# ── Core ──
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
+pydantic>=2.10.0
+pydantic-settings>=2.7.0
+
+# ── AI / LLM ──
+openai>=1.60.0
+# langchain>=0.3.0
+# litellm>=1.50.0
+
+# ── Database ──
+sqlalchemy[asyncio]>=2.0.36
+asyncpg>=0.30.0
+# pgvector>=0.3.0
+
+# ── Redis ──
+redis[hiredis]>=5.2.0
+
+# ── Auth ──
+PyJWT>=2.9.0
+passlib[bcrypt]>=1.7.4
+
+# ── GraphQL ──
+strawberry-graphql[fastapi]>=0.260.0
+
+# ── Observability ──
+structlog>=24.4.0
+prometheus-client>=0.21.0
+# opentelemetry-sdk>=1.28.0
+# opentelemetry-instrumentation-fastapi>=0.49b0
+# sentry-sdk[fastapi]>=2.0.0
+
+# ── HTTP ──
+httpx>=0.28.0
+python-dotenv>=1.0.0
+
+# ── Rate Limiting ──
+slowapi>=0.1.9
+
+# ── Testing ──
+pytest>=8.3.0
+pytest-asyncio>=0.24.0
+pytest-cov>=6.0.0

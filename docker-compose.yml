@@ -1,0 +1,82 @@
+# Haveloc Pro — Docker Compose (Development)
+# Spins up all services for local development
+
+services:
+  # ── Database ──
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: haveloc
+      POSTGRES_PASSWORD: haveloc_dev
+      POSTGRES_DB: haveloc_pro
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U haveloc"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── Cache ──
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ── NestJS API ──
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://haveloc:haveloc_dev@postgres:5432/haveloc_pro
+      REDIS_URL: redis://redis:6379
+      PORT: "4000"
+      WEB_URL: http://localhost:3000
+      AI_SERVICE_URL: http://ai-service:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ── FastAPI AI Service ──
+  ai-service:
+    build:
+      context: ./apps/ai-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o}
+      WEB_URL: http://localhost:3000
+
+  # ── Next.js Web ──
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+      NEXT_PUBLIC_AI_SERVICE_URL: http://localhost:8000
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  redis_data:
