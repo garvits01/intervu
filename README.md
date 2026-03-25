@@ -290,7 +290,7 @@ docker compose up -d
 
 ## 📄 License
 
-This project is **UNLICENSED** — proprietary software. All rights reserved.
+This project is licensed under the [MIT License](LICENSE).
 
 ---
 

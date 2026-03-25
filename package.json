@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Haveloc Pro — Enterprise Project Management & Placement Automation Platform",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
