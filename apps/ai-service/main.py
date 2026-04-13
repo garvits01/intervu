@@ -5,8 +5,6 @@ FastAPI application providing AI-powered features:
 - Task generation from documents
 - Predictive delay forecasting
 """
-#import functions
-
 import os
 import json
 import logging
