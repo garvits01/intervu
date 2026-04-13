@@ -54,7 +54,7 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan,
 )
-
+#function
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[os.getenv("WEB_URL", "http://localhost:3000")],
