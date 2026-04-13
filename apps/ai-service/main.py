@@ -31,7 +31,7 @@ logger = logging.getLogger("haveloc-ai")
 matcher: Optional[PlacementMatcher] = None
 task_gen: Optional[TaskGenerator] = None
 predictor: Optional[PredictiveEngine] = None
-
+#x=1
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
